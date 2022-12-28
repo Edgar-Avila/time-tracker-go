@@ -1,11 +1,12 @@
 /*
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"time-tracker/db"
+	"time-tracker/models"
 
 	"github.com/spf13/cobra"
 )
@@ -14,21 +15,15 @@ import (
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove an activity",
+    Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("remove called")
+        name := args[0]
+        if err := db.Get().Unscoped().Delete(&models.Activity{}, "name = ?", name).Error; err != nil {
+            log.Fatal(err)
+        }
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(removeCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// removeCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// removeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
