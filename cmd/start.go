@@ -5,10 +5,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"time"
-	"time-tracker/db"
 	"time-tracker/models"
+	"time-tracker/repo"
 
 	"github.com/spf13/cobra"
 )
@@ -21,30 +20,22 @@ var startCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		var activity models.Activity
 
 		// Find activity
-		if err := db.Get().Where("name = ?", name).Preload("ActivePeriod").First(&activity).Error; err != nil {
-			log.Fatal(err)
-		}
+        activity := repo.ActivityRepo().GetByName(name)
 
 		// Check if not doing activiy already
 		if activity.ActivePeriod != nil {
 			fmt.Printf("You are already doing the activity \"%s\"", name)
-			return
 		}
 
 		// Create period
 		period := models.Period{StartTime: time.Now(), ActivityID: activity.ID}
-		if err := db.Get().Create(&period).Error; err != nil {
-			log.Fatal(err)
-		}
+        repo.PeriodRepo().Create(&period)
 
 		// Link activity with active period
 		activity.ActivePeriodID = &period.ID
-		if err := db.Get().Save(&activity).Error; err != nil {
-			log.Fatal(err)
-		}
+        repo.ActivityRepo().Update(&activity)
 
 		fmt.Printf("You started the activity \"%s\"\n", name)
 	},

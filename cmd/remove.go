@@ -5,9 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"time-tracker/db"
-	"time-tracker/models"
+	"time-tracker/repo"
 
 	"github.com/spf13/cobra"
 )
@@ -19,9 +17,7 @@ var removeCmd = &cobra.Command{
     Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
         name := args[0]
-        if err := db.Get().Unscoped().Delete(&models.Activity{}, "name = ?", name).Error; err != nil {
-            log.Fatal(err)
-        }
+        repo.ActivityRepo().DeleteByName(name)
         fmt.Printf("You removed the activity \"%s\"", name)
 	},
 }

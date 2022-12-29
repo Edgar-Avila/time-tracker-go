@@ -5,10 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"time"
-	"time-tracker/db"
-	"time-tracker/models"
+	"time-tracker/repo"
 
 	"github.com/spf13/cobra"
 )
@@ -21,12 +19,7 @@ var endCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		var activity models.Activity
-
-		// Get activity
-		if err := db.Get().Where("name = ?", name).Preload("ActivePeriod").First(&activity).Error; err != nil {
-			log.Fatal(err)
-		}
+        activity := repo.ActivityRepo().GetByName(name)
 
 		// Check if activity was not active right now
 		if activity.ActivePeriod == nil {
@@ -36,15 +29,10 @@ var endCmd = &cobra.Command{
 
 		// Update active period with end time
 		activity.ActivePeriod.EndTime = time.Now()
-		if err := db.Get().Save(&activity.ActivePeriod).Error; err != nil {
-			log.Fatal(err)
-		}
+        repo.PeriodRepo().Update(activity.ActivePeriod)
 
 		// Remove active period from activity since it is already finished
-		activity.ActivePeriodID = nil
-		if err := db.Get().Model(&activity).Select("active_period_id").Updates(activity).Error; err != nil {
-			log.Fatal(err)
-		}
+        repo.ActivityRepo().SetFieldNull(&activity, "active_period_id")
 
 		fmt.Printf("You finished doing the activity \"%s\"", name)
 	},

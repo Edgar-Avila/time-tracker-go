@@ -5,9 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"time-tracker/db"
-	"time-tracker/models"
+	"time-tracker/repo"
 
 	"github.com/spf13/cobra"
 )
@@ -18,11 +16,7 @@ var listCmd = &cobra.Command{
 	Short: "List all activities",
     Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-        var activities []models.Activity
-        if err := db.Get().Preload("ActivePeriod").Find(&activities).Error; err != nil {
-            log.Fatal(err)
-        }
-        for _, activity := range activities {
+        for _, activity := range repo.ActivityRepo().GetAll() {
             activeStr := "\n"
             if activity.ActivePeriod != nil {
                 activeStr = "(active)\n"
