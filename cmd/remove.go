@@ -4,6 +4,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"time-tracker/db"
 	"time-tracker/models"
@@ -21,6 +22,7 @@ var removeCmd = &cobra.Command{
         if err := db.Get().Unscoped().Delete(&models.Activity{}, "name = ?", name).Error; err != nil {
             log.Fatal(err)
         }
+        fmt.Printf("You removed the activity \"%s\"", name)
 	},
 }
 

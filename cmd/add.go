@@ -4,6 +4,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"time-tracker/db"
 	"time-tracker/models"
@@ -21,6 +22,7 @@ var addCmd = &cobra.Command{
         if err := db.Get().Create(&models.Activity{ Name: name, }).Error; err != nil {
             log.Fatal(err)
         }
+        fmt.Printf("You added a new activity \"%s\"", name)
 	},
 }
 
