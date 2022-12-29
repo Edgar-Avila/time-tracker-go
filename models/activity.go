@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type Activity struct {
 	gorm.Model
-    Name         string  `gorm:"unique"`
-	ActivePeriod *Period 
+	Name           string `gorm:"unique"`
+	ActivePeriodID *uint
+	ActivePeriod   *Period `gorm:"foreignKey:ActivePeriodID"`
 }

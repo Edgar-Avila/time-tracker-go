@@ -28,18 +28,25 @@ var startCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-        // Check if not doing activiy already
-        if activity.ActivePeriod != nil {
-            fmt.Printf("You are already doing the activity \"%s\"", name)
-            return
-        }
+		// Check if not doing activiy already
+		if activity.ActivePeriod != nil {
+			fmt.Printf("You are already doing the activity \"%s\"", name)
+			return
+		}
 
 		// Create period
 		period := models.Period{StartTime: time.Now(), ActivityID: activity.ID}
 		if err := db.Get().Create(&period).Error; err != nil {
 			log.Fatal(err)
 		}
-        fmt.Printf("You started the activity \"%s\"\n", name)
+
+		// Link activity with active period
+		activity.ActivePeriodID = &period.ID
+		if err := db.Get().Save(&activity).Error; err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("You started the activity \"%s\"\n", name)
 	},
 }
 
