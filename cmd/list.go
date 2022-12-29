@@ -19,11 +19,15 @@ var listCmd = &cobra.Command{
     Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
         var activities []models.Activity
-        if err := db.Get().Find(&activities).Error; err != nil {
+        if err := db.Get().Preload("ActivePeriod").Find(&activities).Error; err != nil {
             log.Fatal(err)
         }
         for _, activity := range activities {
-            fmt.Printf("- %s\n", activity.Name)
+            activeStr := "\n"
+            if activity.ActivePeriod != nil {
+                activeStr = "(active)\n"
+            }
+            fmt.Printf("- %s %s", activity.Name, activeStr)
         }
 	},
 }
