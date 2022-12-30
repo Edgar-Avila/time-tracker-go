@@ -16,25 +16,25 @@ import (
 var endCmd = &cobra.Command{
 	Use:   "end",
 	Short: "End an activity",
-	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		name := args[0]
-        activity := repo.ActivityRepo().GetByName(name)
+        for _, name := range args {
+            activity := repo.ActivityRepo().GetByName(name)
 
-		// Check if activity was not active right now
-		if activity.ActivePeriod == nil {
-			fmt.Printf("You are not doing the activity \"%s\"", name)
-			return
-		}
+            // Check if activity was not active right now
+            if activity.ActivePeriod == nil {
+                fmt.Printf("You are not doing the activity \"%s\"\n", name)
+                continue
+            }
 
-		// Update active period with end time
-		activity.ActivePeriod.EndTime = time.Now()
-        repo.PeriodRepo().Update(activity.ActivePeriod)
+            // Update active period with end time
+            activity.ActivePeriod.EndTime = time.Now()
+            repo.PeriodRepo().Update(activity.ActivePeriod)
 
-		// Remove active period from activity since it is already finished
-        repo.ActivityRepo().SetFieldNull(&activity, "active_period_id")
+            // Remove active period from activity since it is already finished
+            repo.ActivityRepo().SetFieldNull(&activity, "active_period_id")
 
-		fmt.Printf("You finished doing the activity \"%s\"", name)
+            fmt.Printf("You finished doing the activity \"%s\"\n", name)
+        }
 	},
 }
 

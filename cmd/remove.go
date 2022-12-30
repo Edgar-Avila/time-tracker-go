@@ -14,11 +14,11 @@ import (
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove an activity",
-    Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-        name := args[0]
-        repo.ActivityRepo().DeleteByName(name)
-        fmt.Printf("You removed the activity \"%s\"", name)
+        for _, name := range args {
+            repo.ActivityRepo().DeleteByName(name)
+            fmt.Printf("You removed the activity \"%s\"\n", name)
+        }
 	},
 }
 
