@@ -16,7 +16,9 @@ var removeCmd = &cobra.Command{
 	Short: "Remove an activity",
 	Run: func(cmd *cobra.Command, args []string) {
         for _, name := range args {
+            activity := repo.ActivityRepo().GetByName(name)
             repo.ActivityRepo().DeleteByName(name)
+            repo.PeriodRepo().DeleteByActivityId(activity.ID)
             fmt.Printf("You removed the activity \"%s\"\n", name)
         }
 	},

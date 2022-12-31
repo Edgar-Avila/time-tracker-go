@@ -38,15 +38,21 @@ func (pr *periodRepo) Update(period *models.Period) {
 func (pr *periodRepo) GetAfter(timespan string) []models.Period {
     var results []models.Period
     if timespan == "all" {
-        if err := db.Get().Find(&results).Error; err != nil {
+        if err := db.Get().Preload("Activity").Find(&results).Error; err != nil {
             log.Fatal(err)
         }
     } else {
         where := fmt.Sprintf("start_time > date('now', '-1 %ss')", timespan)
-        fmt.Println(where)
-        if err := db.Get().Where(where).Find(&results).Error; err != nil {
+        if err := db.Get().Where(where).Preload("Activity").Find(&results).Error; err != nil {
             log.Fatal(err)
         }
     }
     return results
 }
+
+func (pr *periodRepo) DeleteByActivityId(id uint) {
+    if err := db.Get().Unscoped().Delete(&models.Period{}, "activity_id = ?", id).Error; err != nil {
+        log.Fatal(err)
+    }
+}
+
