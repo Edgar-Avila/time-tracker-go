@@ -18,7 +18,7 @@ func Get() *gorm.DB {
             log.Fatal(err)
         }
         db = database
-        db.AutoMigrate(&models.Activity{}, &models.Period{})
+        db.AutoMigrate(&models.Activity{}, &models.Record{})
 	}
 	return db
 }

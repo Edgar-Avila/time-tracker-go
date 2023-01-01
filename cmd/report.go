@@ -35,17 +35,17 @@ var reportCmd = &cobra.Command{
 		}
 
 		// Get results
-		var results []models.Period
+		var results []models.Record
         if timespan == "all" && activityName == "all" {
-            results = repo.PeriodRepo().GetAll()
+            results = repo.RecordRepo().GetAll()
         } else if timespan == "all" && activityName != "all" {
 			activity := repo.ActivityRepo().GetByName(activityName)
-            results = repo.PeriodRepo().GetAllByActivity(activity)
+            results = repo.RecordRepo().GetAllByActivity(activity)
         } else if timespan != "all" && activityName == "all" {
-			results = repo.PeriodRepo().GetAfter(timespan)
+			results = repo.RecordRepo().GetAfter(timespan)
 		} else {
 			activity := repo.ActivityRepo().GetByName(activityName)
-			results = repo.PeriodRepo().GetAfterByActivity(timespan, activity)
+			results = repo.RecordRepo().GetAfterByActivity(timespan, activity)
 		}
 
 		for _, result := range results {

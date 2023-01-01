@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Period struct {
+type Record struct {
 	gorm.Model
     StartTime  time.Time  `gorm:"not null"`
 	EndTime    time.Time

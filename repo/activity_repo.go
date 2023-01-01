@@ -23,7 +23,7 @@ func ActivityRepo() *activityRepo {
 // ***************************************
 func (ar *activityRepo) GetAll() []models.Activity {
 	var activities []models.Activity
-	if err := db.Get().Preload("ActivePeriod").Find(&activities).Error; err != nil {
+	if err := db.Get().Preload("ActiveRecord").Find(&activities).Error; err != nil {
 		log.Fatal(err)
 	}
 	return activities
@@ -31,7 +31,7 @@ func (ar *activityRepo) GetAll() []models.Activity {
 
 func (ar *activityRepo) GetByName(name string) models.Activity {
     var activity models.Activity
-    if err := db.Get().Where("name = ?", name).Preload("ActivePeriod").First(&activity).Error; err != nil {
+    if err := db.Get().Where("name = ?", name).Preload("ActiveRecord").First(&activity).Error; err != nil {
         log.Fatal(err)
     }
     return activity
@@ -56,7 +56,7 @@ func (ar *activityRepo) Update(activity *models.Activity) {
 }
 
 func (ar *activityRepo) SetFieldNull(activity *models.Activity, field string) {
-    if err := db.Get().Model(&activity).Select("active_period_id").Update(field, nil).Error; err != nil {
+    if err := db.Get().Model(&activity).Select("active_record_id").Update(field, nil).Error; err != nil {
         log.Fatal(err)
     }
 }

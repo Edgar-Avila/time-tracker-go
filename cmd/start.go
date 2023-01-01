@@ -20,17 +20,17 @@ var startCmd = &cobra.Command{
             activity := repo.ActivityRepo().GetByName(name)
 
             // Check if not doing activiy already
-            if activity.ActivePeriod != nil {
+            if activity.ActiveRecord != nil {
                 fmt.Printf("You are already doing the activity \"%s\"\n", name)
                 continue
             }
 
-            // Create period
-            period := models.Period{StartTime: time.Now(), ActivityID: activity.ID}
-            repo.PeriodRepo().Create(&period)
+            // Create record
+            record := models.Record{StartTime: time.Now(), ActivityID: activity.ID}
+            repo.RecordRepo().Create(&record)
 
-            // Link activity with active period
-            activity.ActivePeriodID = &period.ID
+            // Link activity with active record
+            activity.ActiveRecordID = &record.ID
             repo.ActivityRepo().Update(&activity)
 
             fmt.Printf("You started the activity \"%s\"\n", name)

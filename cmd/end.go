@@ -18,17 +18,17 @@ var endCmd = &cobra.Command{
             activity := repo.ActivityRepo().GetByName(name)
 
             // Check if activity was not active right now
-            if activity.ActivePeriod == nil {
+            if activity.ActiveRecord == nil {
                 fmt.Printf("You are not doing the activity \"%s\"\n", name)
                 continue
             }
 
-            // Update active period with end time
-            activity.ActivePeriod.EndTime = time.Now()
-            repo.PeriodRepo().Update(activity.ActivePeriod)
+            // Update active record with end time
+            activity.ActiveRecord.EndTime = time.Now()
+            repo.RecordRepo().Update(activity.ActiveRecord)
 
-            // Remove active period from activity since it is already finished
-            repo.ActivityRepo().SetFieldNull(&activity, "active_period_id")
+            // Remove active record from activity since it is already finished
+            repo.ActivityRepo().SetFieldNull(&activity, "active_record_id")
 
             fmt.Printf("You finished doing the activity \"%s\"\n", name)
         }

@@ -15,7 +15,7 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
         for _, activity := range repo.ActivityRepo().GetAll() {
             activeStr := "\n"
-            if activity.ActivePeriod != nil {
+            if activity.ActiveRecord != nil {
                 activeStr = "(active)\n"
             }
             fmt.Printf("- %s %s", activity.Name, activeStr)

@@ -15,7 +15,7 @@ var removeCmd = &cobra.Command{
         for _, name := range args {
             activity := repo.ActivityRepo().GetByName(name)
             repo.ActivityRepo().DeleteByName(name)
-            repo.PeriodRepo().DeleteByActivityId(activity.ID)
+            repo.RecordRepo().DeleteByActivityId(activity.ID)
             fmt.Printf("You removed the activity \"%s\"\n", name)
         }
 	},

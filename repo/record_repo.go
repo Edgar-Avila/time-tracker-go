@@ -7,52 +7,52 @@ import (
 	"time-tracker/models"
 )
 
-type periodRepo struct {
+type redordRepo struct {
 }
 
-var periodRepoInstance *periodRepo
+var recordRepoInstance *redordRepo
 
-func PeriodRepo() *periodRepo {
-	if periodRepoInstance == nil {
-		periodRepoInstance = &periodRepo{}
+func RecordRepo() *redordRepo {
+	if recordRepoInstance == nil {
+		recordRepoInstance = &redordRepo{}
 	}
-	return periodRepoInstance
+	return recordRepoInstance
 }
 
 // ***************************************
 //               Functions
 // ***************************************
 
-func (pr *periodRepo) Create(period *models.Period) {
-	if err := db.Get().Create(period).Error; err != nil {
+func (rr *redordRepo) Create(record *models.Record) {
+	if err := db.Get().Create(record).Error; err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (pr *periodRepo) Update(period *models.Period) {
-	if err := db.Get().Save(period).Error; err != nil {
+func (rr *redordRepo) Update(record *models.Record) {
+	if err := db.Get().Save(record).Error; err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (pr *periodRepo) GetAll() []models.Period {
-    var results []models.Period
+func (rr *redordRepo) GetAll() []models.Record {
+    var results []models.Record
     if err := db.Get().Preload("Activity").Find(&results).Error; err != nil {
         log.Fatal(err)
     }
     return results
 }
 
-func (pr *periodRepo) GetAllByActivity(activity models.Activity) []models.Period {
-    var results []models.Period
+func (rr *redordRepo) GetAllByActivity(activity models.Activity) []models.Record {
+    var results []models.Record
     if err := db.Get().Where("activity_id = ?", activity.ID).Preload("Activity").Find(&results).Error; err != nil {
         log.Fatal(err)
     }
     return results
 }
 
-func (pr *periodRepo) GetAfter(timespan string) []models.Period {
-    var results []models.Period
+func (rr *redordRepo) GetAfter(timespan string) []models.Record {
+    var results []models.Record
     where := fmt.Sprintf("start_time > date('now', '-1 %ss')", timespan)
     if err := db.Get().Where(where).Preload("Activity").Find(&results).Error; err != nil {
         log.Fatal(err)
@@ -60,8 +60,8 @@ func (pr *periodRepo) GetAfter(timespan string) []models.Period {
     return results
 }
 
-func (pr *periodRepo) GetAfterByActivity(timespan string, activity models.Activity) []models.Period {
-    var results []models.Period
+func (rr *redordRepo) GetAfterByActivity(timespan string, activity models.Activity) []models.Record {
+    var results []models.Record
     where := fmt.Sprintf("start_time > date('now', '-1 %ss') AND activity_id = ?", timespan)
     if err := db.Get().Where(where, activity.ID).Preload("Activity").Find(&results).Error; err != nil {
         log.Fatal(err)
@@ -69,8 +69,8 @@ func (pr *periodRepo) GetAfterByActivity(timespan string, activity models.Activi
     return results
 }
 
-func (pr *periodRepo) DeleteByActivityId(id uint) {
-    if err := db.Get().Unscoped().Delete(&models.Period{}, "activity_id = ?", id).Error; err != nil {
+func (rr *redordRepo) DeleteByActivityId(id uint) {
+    if err := db.Get().Unscoped().Delete(&models.Record{}, "activity_id = ?", id).Error; err != nil {
         log.Fatal(err)
     }
 }
