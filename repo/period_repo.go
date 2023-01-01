@@ -50,6 +50,21 @@ func (pr *periodRepo) GetAfter(timespan string) []models.Period {
     return results
 }
 
+func (pr *periodRepo) GetAfterByActivity(timespan string, activity models.Activity) []models.Period {
+    var results []models.Period
+    if timespan == "all" {
+        if err := db.Get().Where("activity_id = ?", activity.ID).Preload("Activity").Find(&results).Error; err != nil {
+            log.Fatal(err)
+        }
+    } else {
+        where := fmt.Sprintf("start_time > date('now', '-1 %ss') AND activity_id = ?", timespan)
+        if err := db.Get().Where(where, activity.ID).Preload("Activity").Find(&results).Error; err != nil {
+            log.Fatal(err)
+        }
+    }
+    return results
+}
+
 func (pr *periodRepo) DeleteByActivityId(id uint) {
     if err := db.Get().Unscoped().Delete(&models.Period{}, "activity_id = ?", id).Error; err != nil {
         log.Fatal(err)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"time-tracker/models"
 	"time-tracker/repo"
 	"time-tracker/util"
 
@@ -24,6 +25,11 @@ var reportCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		activityName, err := cmd.Flags().GetString("activity")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// Check if timespan is valid
 		validValues := []string{"all", "day", "week", "month", "year"}
 		isValid := util.StringInSlice(timespan, validValues)
@@ -32,13 +38,20 @@ var reportCmd = &cobra.Command{
 		}
 
 		// Get results
-		results := repo.PeriodRepo().GetAfter(timespan)
+		var results []models.Period
+		if activityName == "all" {
+			results = repo.PeriodRepo().GetAfter(timespan)
+		} else {
+			activity := repo.ActivityRepo().GetByName(activityName)
+			results = repo.PeriodRepo().GetAfterByActivity(timespan, activity)
+		}
+
 		for _, result := range results {
 			diff := result.EndTime.Sub(result.StartTime)
-            startDate := result.StartTime.Format("2006-01-02")
+			startDate := result.StartTime.Format("2006-01-02")
 			out := time.Time{}.Add(diff).Format("15:04:05")
-            name := result.Activity.Name
-            fmt.Printf("%s: Activity %s was done for %s\n", startDate, name, out)
+			name := result.Activity.Name
+			fmt.Printf("%s: Activity %s was done for %s\n", startDate, name, out)
 		}
 	},
 }
@@ -47,4 +60,5 @@ func init() {
 	rootCmd.AddCommand(reportCmd)
 
 	reportCmd.Flags().StringP("timespan", "t", "all", "How old should the analytics be?")
+	reportCmd.Flags().StringP("activity", "a", "all", "Get reports on a particular activity")
 }
