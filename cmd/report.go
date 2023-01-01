@@ -1,6 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -39,7 +36,12 @@ var reportCmd = &cobra.Command{
 
 		// Get results
 		var results []models.Period
-		if activityName == "all" {
+        if timespan == "all" && activityName == "all" {
+            results = repo.PeriodRepo().GetAll()
+        } else if timespan == "all" && activityName != "all" {
+			activity := repo.ActivityRepo().GetByName(activityName)
+            results = repo.PeriodRepo().GetAllByActivity(activity)
+        } else if timespan != "all" && activityName == "all" {
 			results = repo.PeriodRepo().GetAfter(timespan)
 		} else {
 			activity := repo.ActivityRepo().GetByName(activityName)
