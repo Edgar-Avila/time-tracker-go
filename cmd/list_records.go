@@ -21,7 +21,7 @@ var listRecordsCmd = &cobra.Command{
 				if !r.EndTime.IsZero() {
 					endStr = r.EndTime.Format(time.RFC3339)
 				}
-				fmt.Printf("- %s: %s -> %s\n", r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
+				fmt.Printf("- %d: %s: %s -> %s\n", r.ID, r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
 			}
 			return
 		}
@@ -35,7 +35,7 @@ var listRecordsCmd = &cobra.Command{
 			if r.Activity != nil {
 				name = r.Activity.Name
 			}
-			fmt.Printf("- %s: %s -> %s\n", name, r.StartTime.Format(time.RFC3339), endStr)
+			fmt.Printf("- %d: %s: %s -> %s\n", r.ID, name, r.StartTime.Format(time.RFC3339), endStr)
 		}
 	},
 }
