@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"fmt"
 	"log"
+	"time"
 	"time-tracker/db"
 	"time-tracker/models"
 )
@@ -51,19 +51,19 @@ func (rr *redordRepo) GetAllByActivity(activity models.Activity) []models.Record
 	return results
 }
 
-func (rr *redordRepo) GetAfter(timespan string) []models.Record {
+// GetAfterSince returns all records that started after the provided time
+func (rr *redordRepo) GetAfterSince(since time.Time) []models.Record {
 	var results []models.Record
-	where := fmt.Sprintf("start_time > date('now', '-1 %ss')", timespan)
-	if err := db.Get().Where(where).Preload("Activity").Find(&results).Error; err != nil {
+	if err := db.Get().Where("start_time > ?", since).Preload("Activity").Find(&results).Error; err != nil {
 		log.Fatal(err)
 	}
 	return results
 }
 
-func (rr *redordRepo) GetAfterByActivity(timespan string, activity models.Activity) []models.Record {
+// GetAfterByActivitySince returns all records for an activity that started after the provided time
+func (rr *redordRepo) GetAfterByActivitySince(since time.Time, activity models.Activity) []models.Record {
 	var results []models.Record
-	where := fmt.Sprintf("start_time > date('now', '-1 %ss') AND activity_id = ?", timespan)
-	if err := db.Get().Where(where, activity.ID).Preload("Activity").Find(&results).Error; err != nil {
+	if err := db.Get().Where("start_time > ? AND activity_id = ?", since, activity.ID).Preload("Activity").Find(&results).Error; err != nil {
 		log.Fatal(err)
 	}
 	return results

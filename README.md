@@ -19,11 +19,11 @@ End doing activities
 Get a list of all your activities
 
 ### report
-Get a report of your activities, you can add flags:
+Get a report of your activities. You can either pass a natural language time expression as arguments (examples below), or use the `--activity` flag to filter by activity.
 
-- timespan(t): How far back you want to get the report for (day, week, month, year, all), default all.
+- Examples: `report last week`, `report 2 days ago`, `report monday`, `report "yesterday at 5pm"`
 
-- activity(a): Use this if you want to only get the report for a single activity, default all.
+- activity(a): Use this if you want to only get the report for a single activity, default `all`.
 
 ## Development
 The project is built with go, so you can just clone the repo, run

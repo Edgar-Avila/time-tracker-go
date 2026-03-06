@@ -12,14 +12,16 @@ type activityRepo struct {
 var activityRepoInstance *activityRepo
 
 func ActivityRepo() *activityRepo {
-    if activityRepoInstance == nil {
-        activityRepoInstance = &activityRepo{}
-    }
-    return activityRepoInstance
+	if activityRepoInstance == nil {
+		activityRepoInstance = &activityRepo{}
+	}
+	return activityRepoInstance
 }
 
 // ***************************************
-//               Functions
+//
+//	Functions
+//
 // ***************************************
 func (ar *activityRepo) GetAll() []models.Activity {
 	var activities []models.Activity
@@ -30,33 +32,33 @@ func (ar *activityRepo) GetAll() []models.Activity {
 }
 
 func (ar *activityRepo) GetByName(name string) models.Activity {
-    var activity models.Activity
-    if err := db.Get().Where("name = ?", name).Preload("ActiveRecord").First(&activity).Error; err != nil {
-        log.Fatal(err)
-    }
-    return activity
+	var activity models.Activity
+	if err := db.Get().Where("name = ?", name).Preload("ActiveRecord").First(&activity).Error; err != nil {
+		log.Fatal(err)
+	}
+	return activity
 }
 
 func (ar *activityRepo) Create(activity *models.Activity) {
-    if err := db.Get().Create(&activity).Error; err != nil {
-        log.Fatal(err)
-    }
+	if err := db.Get().Create(&activity).Error; err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (ar *activityRepo) DeleteByName(name string) {
-    if err := db.Get().Unscoped().Delete(&models.Activity{}, "name = ?", name).Error; err != nil {
-        log.Fatal(err)
-    }
+	if err := db.Get().Unscoped().Delete(&models.Activity{}, "name = ?", name).Error; err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (ar *activityRepo) Update(activity *models.Activity) {
-    if err := db.Get().Save(activity).Error; err != nil {
-        log.Fatal(err)
-    }
+	if err := db.Get().Save(activity).Error; err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (ar *activityRepo) SetFieldNull(activity *models.Activity, field string) {
-    if err := db.Get().Model(&activity).Select("active_record_id").Update(field, nil).Error; err != nil {
-        log.Fatal(err)
-    }
+	if err := db.Get().Model(&activity).Select("active_record_id").Update(field, nil).Error; err != nil {
+		log.Fatal(err)
+	}
 }

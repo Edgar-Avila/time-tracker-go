@@ -14,11 +14,11 @@ var db *gorm.DB
 func Get() *gorm.DB {
 	if db == nil {
 		database, err := gorm.Open(sqlite.Open(config.Get().DbPath), &gorm.Config{})
-        if err != nil {
-            log.Fatal(err)
-        }
-        db = database
-        db.AutoMigrate(&models.Activity{}, &models.Record{})
+		if err != nil {
+			log.Fatal(err)
+		}
+		db = database
+		db.AutoMigrate(&models.Activity{}, &models.Record{})
 	}
 	return db
 }

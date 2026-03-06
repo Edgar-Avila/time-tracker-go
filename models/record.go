@@ -8,8 +8,8 @@ import (
 
 type Record struct {
 	gorm.Model
-    StartTime  time.Time  `gorm:"not null"`
+	StartTime  time.Time `gorm:"not null"`
 	EndTime    time.Time
-    ActivityID uint        `gorm:"not null"`
+	ActivityID uint `gorm:"not null"`
 	Activity   *Activity
 }

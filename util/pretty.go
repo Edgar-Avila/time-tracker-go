@@ -7,13 +7,13 @@ import (
 )
 
 func Pretty(obj interface{}) string {
-    b, err := json.MarshalIndent(obj, "", "  ")
-    if err != nil {
-        log.Fatal(err)
-    }
-    return string(b)
+	b, err := json.MarshalIndent(obj, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(b)
 }
 
 func PrettyPrint(obj interface{}) {
-    fmt.Println(Pretty(obj))
+	fmt.Println(Pretty(obj))
 }
