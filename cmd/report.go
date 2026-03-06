@@ -8,9 +8,8 @@ import (
 	"time-tracker/models"
 	"time-tracker/repo"
 
-	"github.com/olebedev/when"
-	en "github.com/olebedev/when/rules/en"
 	"github.com/spf13/cobra"
+	"github.com/xuri/excelize/v2"
 	myWhen "time-tracker/util/when"
 )
 
@@ -29,9 +28,7 @@ var reportCmd = &cobra.Command{
 		// If extra args were provided, try parsing them as a natural language time
 		if len(args) > 0 {
 			text := strings.Join(args, " ")
-			w := when.New(nil)
-			w.Add(en.All...)
-			w.Add(myWhen.All...)
+			w := myWhen.New()
 			res, err := w.Parse(text, time.Now())
 			if err != nil {
 				log.Fatalf("failed to parse time expression: %v", err)
@@ -58,6 +55,41 @@ var reportCmd = &cobra.Command{
 			}
 		}
 
+		// If export flag provided, write results to an Excel file
+		exportFile, err := cmd.Flags().GetString("export")
+		if err != nil {
+			log.Fatal(err)
+		}
+		if exportFile != "" {
+			f := excelize.NewFile()
+			sheet := f.GetSheetName(0)
+			// headers
+			f.SetCellValue(sheet, "A1", "Date")
+			f.SetCellValue(sheet, "B1", "Activity")
+			f.SetCellValue(sheet, "C1", "Duration")
+
+			for i, result := range results {
+				row := i + 2
+				diff := result.EndTime.Sub(result.StartTime)
+				if result.EndTime.IsZero() {
+					diff = time.Since(result.StartTime)
+				}
+				startDate := result.StartTime.Format("2006-01-02")
+				out := time.Time{}.Add(diff).Format("15:04:05")
+				name := ""
+				if result.Activity != nil {
+					name = result.Activity.Name
+				}
+				f.SetCellValue(sheet, fmt.Sprintf("A%d", row), startDate)
+				f.SetCellValue(sheet, fmt.Sprintf("B%d", row), name)
+				f.SetCellValue(sheet, fmt.Sprintf("C%d", row), out)
+			}
+			if err := f.SaveAs(exportFile); err != nil {
+				log.Fatalf("failed to save excel file: %v", err)
+			}
+			fmt.Printf("Exported report to %s\n", exportFile)
+		}
+
 		for _, result := range results {
 			diff := result.EndTime.Sub(result.StartTime)
 			startDate := result.StartTime.Format("2006-01-02")
@@ -71,4 +103,5 @@ var reportCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(reportCmd)
 	reportCmd.Flags().StringP("activity", "a", "all", "Get reports on a particular activity")
+	reportCmd.Flags().StringP("export", "e", "", "Write report to an Excel file")
 }

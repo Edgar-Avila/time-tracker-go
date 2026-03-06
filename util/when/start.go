@@ -70,3 +70,35 @@ func startOfWeek(s rules.Strategy) rules.Rule {
 		},
 	}
 }
+
+func startOfYear(s rules.Strategy) rules.Rule {
+	overwrite := s == rules.Override
+
+	return &rules.F{
+		RegExp: regexp.MustCompile(`(?i)(?:\W|^)\s*(start of (?:the )?year)\s*(?:\W|$)`),
+		Applier: func(m *rules.Match, c *rules.Context, o *rules.Options, ref time.Time) (bool, error) {
+
+			if c.Month == nil || overwrite {
+				c.Month = pointer.ToInt(1)
+			}
+
+			if c.Day == nil || overwrite {
+				c.Day = pointer.ToInt(1)
+			}
+
+			if c.Hour == nil || overwrite {
+				c.Hour = pointer.ToInt(0)
+			}
+
+			if c.Minute == nil || overwrite {
+				c.Minute = pointer.ToInt(0)
+			}
+
+			if c.Second == nil || overwrite {
+				c.Second = pointer.ToInt(0)
+			}
+
+			return true, nil
+		},
+	}
+}
