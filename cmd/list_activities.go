@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var listActivitiesCmd = &cobra.Command{
 			if activity.ActiveRecord != nil {
 				activeStr = "(active)\n"
 			}
-			fmt.Printf("- %s %s", activity.Name, activeStr)
+			color.New(color.FgWhite).Printf("- %s %s", activity.Name, activeStr)
 		}
 	},
 }

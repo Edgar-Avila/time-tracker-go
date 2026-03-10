@@ -6,6 +6,7 @@ import (
 	"time-tracker/models"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +62,7 @@ Example: time-tracker set exercise 2023-03-01T09:00:00 2023-03-01T10:30:00`,
 
 		start, err := parseTime(args[1])
 		if err != nil {
-			fmt.Printf("Failed to parse start time: %v\n", err)
+			color.New(color.FgRed).Printf("Failed to parse start time: %v\n", err)
 			return
 		}
 
@@ -70,12 +71,12 @@ Example: time-tracker set exercise 2023-03-01T09:00:00 2023-03-01T10:30:00`,
 		if len(args) > 2 {
 			end, err = parseTime(args[2])
 			if err != nil {
-				fmt.Printf("Failed to parse end time: %v\n", err)
+				color.New(color.FgRed).Printf("Failed to parse end time: %v\n", err)
 				return
 			}
 			hasEnd = true
 			if end.Before(start) {
-				fmt.Printf("End time is before start time\n")
+				color.New(color.FgRed).Printf("End time is before start time\n")
 				return
 			}
 		}
@@ -90,14 +91,14 @@ Example: time-tracker set exercise 2023-03-01T09:00:00 2023-03-01T10:30:00`,
 		if !hasEnd {
 			// if no end provided, set as active record if activity not already active
 			if activity.ActiveRecord != nil {
-				fmt.Printf("Activity \"%s\" already has an active record\n", name)
+				color.New(color.FgYellow).Printf("Activity \"%s\" already has an active record\n", name)
 			} else {
 				activity.ActiveRecordID = &record.ID
 				repo.ActivityRepo().Update(&activity)
-				fmt.Printf("Created active record for activity \"%s\" starting at %s\n", name, start)
+				color.New(color.FgGreen).Printf("Created active record for activity \"%s\" starting at %s\n", name, start)
 			}
 		} else {
-			fmt.Printf("Created record for activity \"%s\" from %s to %s\n", name, start, end)
+			color.New(color.FgGreen).Printf("Created record for activity \"%s\" from %s to %s\n", name, start, end)
 		}
 	},
 }

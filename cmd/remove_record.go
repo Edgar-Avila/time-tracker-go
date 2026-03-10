@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -16,16 +16,16 @@ var removeRecordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
-			fmt.Printf("invalid id: %v\n", err)
+			color.New(color.FgRed).Printf("invalid id: %v\n", err)
 			return
 		}
 
 		if err := repo.RecordRepo().DeleteByID(uint(id)); err != nil {
-			fmt.Printf("failed to remove record: %v\n", err)
+			color.New(color.FgRed).Printf("failed to remove record: %v\n", err)
 			return
 		}
 
-		fmt.Printf("Removed record %d\n", id)
+		color.New(color.FgGreen).Printf("Removed record %d\n", id)
 	},
 }
 

@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
 	"time-tracker/models"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +15,7 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, name := range args {
 			repo.ActivityRepo().Create(&models.Activity{Name: name})
-			fmt.Printf("You added a new activity \"%s\"\n", name)
+			color.New(color.FgGreen).Printf("You added a new activity \"%s\"\n", name)
 		}
 	},
 }

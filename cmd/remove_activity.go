@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +17,7 @@ var removeActivityCmd = &cobra.Command{
 		activity := repo.ActivityRepo().GetByName(name)
 		repo.ActivityRepo().DeleteByName(name)
 		repo.RecordRepo().DeleteByActivityId(activity.ID)
-		fmt.Printf("You removed the activity \"%s\"\n", name)
+		color.New(color.FgGreen).Printf("You removed the activity \"%s\"\n", name)
 	},
 }
 

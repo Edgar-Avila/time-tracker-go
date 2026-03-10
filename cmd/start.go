@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"time"
 	"time-tracker/models"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,7 @@ var startCmd = &cobra.Command{
 
 			// Check if not doing activiy already
 			if activity.ActiveRecord != nil {
-				fmt.Printf("You are already doing the activity \"%s\"\n", name)
+				color.New(color.FgYellow).Printf("You are already doing the activity \"%s\"\n", name)
 				continue
 			}
 
@@ -33,7 +33,7 @@ var startCmd = &cobra.Command{
 			activity.ActiveRecordID = &record.ID
 			repo.ActivityRepo().Update(&activity)
 
-			fmt.Printf("You started the activity \"%s\"\n", name)
+			color.New(color.FgGreen).Printf("You started the activity \"%s\"\n", name)
 		}
 	},
 }

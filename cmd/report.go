@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"strings"
 	"time"
 	"time-tracker/models"
 	"time-tracker/repo"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/xuri/excelize/v2"
 	myWhen "time-tracker/util/when"
@@ -20,7 +21,8 @@ var reportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		activityName, err := cmd.Flags().GetString("activity")
 		if err != nil {
-			log.Fatal(err)
+			color.New(color.FgRed).Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
 		}
 		// Get results
 		var results []models.Record
@@ -31,14 +33,15 @@ var reportCmd = &cobra.Command{
 			w := myWhen.New()
 			res, err := w.Parse(text, time.Now())
 			if err != nil {
-				log.Fatalf("failed to parse time expression: %v", err)
+				color.New(color.FgRed).Fprintf(os.Stderr, "failed to parse time expression: %v\n", err)
+				os.Exit(1)
 			}
 			if res == nil {
-				fmt.Printf("Could not understand time expression: %s\n", text)
+				color.New(color.FgYellow).Printf("Could not understand time expression: %s\n", text)
 				return
 			}
 
-			fmt.Printf("Reporting on records since %s\n", res.Time.Format(time.RFC1123))
+			color.New(color.FgGreen).Printf("Reporting on records since %s\n", res.Time.Format(time.RFC1123))
 			since := res.Time
 			if activityName == "all" {
 				results = repo.RecordRepo().GetAfterSince(since)
@@ -58,7 +61,8 @@ var reportCmd = &cobra.Command{
 		// If export flag provided, write results to an Excel file
 		exportFile, err := cmd.Flags().GetString("export")
 		if err != nil {
-			log.Fatal(err)
+			color.New(color.FgRed).Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
 		}
 		if exportFile != "" {
 			f := excelize.NewFile()
@@ -85,18 +89,34 @@ var reportCmd = &cobra.Command{
 				f.SetCellValue(sheet, fmt.Sprintf("C%d", row), out)
 			}
 			if err := f.SaveAs(exportFile); err != nil {
-				log.Fatalf("failed to save excel file: %v", err)
+				color.New(color.FgRed).Fprintf(os.Stderr, "failed to save excel file: %v\n", err)
+				os.Exit(1)
 			}
-			fmt.Printf("Exported report to %s\n", exportFile)
+			color.New(color.FgGreen).Printf("Exported report to %s\n", exportFile)
 		}
 
+		var total time.Duration
 		for _, result := range results {
 			diff := result.EndTime.Sub(result.StartTime)
+			if result.EndTime.IsZero() {
+				diff = time.Since(result.StartTime)
+			}
+			total += diff
 			startDate := result.StartTime.Format("2006-01-02")
 			out := time.Time{}.Add(diff).Format("15:04:05")
-			name := result.Activity.Name
-			fmt.Printf("%s: Activity %s was done for %s\n", startDate, name, out)
+			name := ""
+			if result.Activity != nil {
+				name = result.Activity.Name
+			}
+			// Date in white, activity in cyan, duration in yellow
+			color.New(color.FgWhite).Printf("%s: ", startDate)
+			color.New(color.FgCyan).Printf("Activity %s ", name)
+			color.New(color.FgYellow).Printf("was done for %s\n", out)
 		}
+
+		// Summary line: number of records and total time
+		totalStr := time.Time{}.Add(total).Format("15:04:05")
+		color.New(color.FgMagenta, color.Bold).Printf("Summary: %d records, total time %s\n", len(results), totalStr)
 	},
 }
 

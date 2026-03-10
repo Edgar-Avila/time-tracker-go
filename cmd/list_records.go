@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -9,6 +8,7 @@ import (
 
 	myWhen "time-tracker/util/when"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -29,15 +29,16 @@ var listRecordsCmd = &cobra.Command{
 			w := myWhen.New()
 			res, err := w.Parse(text, time.Now())
 			if err != nil {
-				log.Fatalf("failed to parse time expression: %v", err)
+				color.New(color.FgRed).Fprintf(color.Output, "failed to parse time expression: %v\n", err)
+				return
 			}
 			if res == nil {
-				fmt.Printf("Could not understand time expression: %s\n", text)
+				color.New(color.FgYellow).Printf("Could not understand time expression: %s\n", text)
 				return
 			}
 			since := res.Time
 			if activityName == "all" {
-				fmt.Printf("Listing records since %s\n", since.Format(time.RFC1123))
+				color.New(color.FgGreen).Printf("Listing records since %s\n", since.Format(time.RFC1123))
 				for _, r := range repo.RecordRepo().GetAfterSince(since) {
 					endStr := "(active)"
 					if !r.EndTime.IsZero() {
@@ -47,17 +48,17 @@ var listRecordsCmd = &cobra.Command{
 					if r.Activity != nil {
 						name = r.Activity.Name
 					}
-					fmt.Printf("- %d: %s: %s -> %s\n", r.ID, name, r.StartTime.Format(time.RFC3339), endStr)
+					color.New(color.FgWhite).Printf("- %d: %s: %s -> %s\n", r.ID, name, r.StartTime.Format(time.RFC3339), endStr)
 				}
 			} else {
 				activity := repo.ActivityRepo().GetByName(activityName)
-				fmt.Printf("Listing records for activity %s since %s\n", activity.Name, since.Format(time.RFC1123))
+				color.New(color.FgGreen).Printf("Listing records for activity %s since %s\n", activity.Name, since.Format(time.RFC1123))
 				for _, r := range repo.RecordRepo().GetAfterByActivitySince(since, activity) {
 					endStr := "(active)"
 					if !r.EndTime.IsZero() {
 						endStr = r.EndTime.Format(time.RFC3339)
 					}
-					fmt.Printf("- %d: %s: %s -> %s\n", r.ID, r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
+					color.New(color.FgWhite).Printf("- %d: %s: %s -> %s\n", r.ID, r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
 				}
 			}
 			return
@@ -74,7 +75,7 @@ var listRecordsCmd = &cobra.Command{
 				if r.Activity != nil {
 					name = r.Activity.Name
 				}
-				fmt.Printf("- %d: %s: %s -> %s\n", r.ID, name, r.StartTime.Format(time.RFC3339), endStr)
+				color.New(color.FgWhite).Printf("- %d: %s: %s -> %s\n", r.ID, name, r.StartTime.Format(time.RFC3339), endStr)
 			}
 			return
 		}
@@ -85,7 +86,7 @@ var listRecordsCmd = &cobra.Command{
 			if !r.EndTime.IsZero() {
 				endStr = r.EndTime.Format(time.RFC3339)
 			}
-			fmt.Printf("- %d: %s: %s -> %s\n", r.ID, r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
+			color.New(color.FgWhite).Printf("- %d: %s: %s -> %s\n", r.ID, r.Activity.Name, r.StartTime.Format(time.RFC3339), endStr)
 		}
 	},
 }
