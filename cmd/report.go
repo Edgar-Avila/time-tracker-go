@@ -115,7 +115,7 @@ var reportCmd = &cobra.Command{
 		}
 
 		// Summary line: number of records and total time
-		totalStr := time.Time{}.Add(total).Format("15:04:05")
+		totalStr := total.String()
 		color.New(color.FgMagenta, color.Bold).Printf("Summary: %d records, total time %s\n", len(results), totalStr)
 	},
 }
